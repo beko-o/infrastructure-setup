@@ -1,0 +1,17 @@
+zabbixServer:
+  adminPassword: "${ZABBIX_ADMIN_PASSWORD}"
+
+web:
+  enabled: true
+
+database:
+  type: mysql
+  mysql:
+    enabled: true
+    rootPassword: "${ZABBIX_ADMIN_PASSWORD}"
+    persistence:
+      enabled: true
+      size: 10Gi
+
+ingress:
+  enabled: false  # через Caddyfile

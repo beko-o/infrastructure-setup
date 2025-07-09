@@ -1,0 +1,54 @@
+repositories:
+  - name: caddy
+    url: https://caddyserver.github.io/helm
+  - name: n8n
+    url: https://n8nio.github.io/helm-charts
+  - name: supabase
+    url: https://supabase.github.io/helm-charts
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+  - name: zabbix-community
+    url: https://zabbix-community.github.io/helm-zabbix
+
+releases:
+  - name: caddy
+    namespace: infrastructure
+    createNamespace: true
+    chart: caddy/caddy
+    values:
+      - values/caddy.values.yaml
+
+  - name: n8n
+    namespace: infrastructure
+    createNamespace: true
+    chart: n8n/n8n
+    values:
+      - <(envsubst < values/n8n.values.yaml)
+
+  - name: supabase
+    namespace: supabase
+    createNamespace: true
+    chart: supabase/supabase
+    values:
+      - <(envsubst < values/supabase.values.yaml)
+
+  - name: openwebui
+    namespace: infrastructure
+    createNamespace: false
+    chart: ./charts/openwebui       # если вы упакуете собственный chart
+    values:
+      - <(envsubst < values/openwebui.values.yaml)
+
+  - name: redis
+    namespace: infrastructure
+    createNamespace: false
+    chart: bitnami/redis
+    values:
+      - <(envsubst < values/redis.values.yaml)
+
+  - name: zabbix
+    namespace: zabbix
+    createNamespace: true
+    chart: zabbix-community/zabbix
+    values:
+      - <(envsubst < values/zabbix.values.yaml)
