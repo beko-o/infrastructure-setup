@@ -1,95 +1,95 @@
-version: '3.8'
-
 services:
-  # PostgreSQL
-  postgres:
-    image: postgres:15
-    container_name: postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-
-  # Supabase Studio
-  studio:
-    image: supabase/studio:latest
-    container_name: studio
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    environment:
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_USER: postgres
-      DB_NAME: postgres
-      DB_PASSWORD: "${POSTGRES_PASSWORD}"
-    depends_on:
-      - postgres
-
-  # n8n
-  n8n:
-    image: n8nio/n8n:latest
-    container_name: n8n
-    restart: unless-stopped
-    ports:
-      - "5678:5678"
-    environment:
-      # Basic Auth
-      N8N_BASIC_AUTH_ACTIVE: "true"
-      N8N_BASIC_AUTH_USER: "admin"
-      N8N_BASIC_AUTH_PASSWORD: "changeme"
-      # База данных
-      DB_TYPE: postgres
-      DB_POSTGRESDB_HOST: postgres
-      DB_POSTGRESDB_PORT: 5432
-      DB_POSTGRESDB_DATABASE: postgres
-      DB_POSTGRESDB_USER: postgres
-      DB_POSTGRESDB_PASSWORD: "${POSTGRES_PASSWORD}"
-      # вебух:
-      WEBHOOK_TUNNEL_URL: "https://n8n.${DOMAIN}/"
-    volumes:
-      - n8ndata:/home/node/.n8n
-    depends_on:
-      - postgres
-
-  # Redis (опционально)
-  redis:
-    image: redis:7
-    container_name: redis
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
-    volumes:
-      - redisdata:/data
-
-  # Uptime Kuma
-  uptime-kuma:
-    image: louislam/uptime-kuma:latest
-    container_name: uptime-kuma
-    restart: unless-stopped
-    ports:
-      - "3001:3001"
-    volumes:
-      - kumadata:/app/data
-
-  # Caddy (reverse proxy + HTTPS)
   caddy:
-    image: caddy:2
-    container_name: caddy
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
+    image: caddy:2.9.1-alpine
+    ports: ["80:80", "443:443"]
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
-      - caddy_data:/data
-      - caddy_config:/config
+    restart: unless-stopped
+
+  db:
+    image: supabase/postgres:15.8.1.060
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  meta:
+    image: supabase/postgres-meta:v0.89.3
+    depends_on:
+      db:
+        condition: service_started
+    environment:
+      - PG_META_DB_HOST=db
+      - PG_META_DB_PORT=5432
+      - PG_META_DB_NAME=postgres
+      - PG_META_DB_USER=postgres
+      - PG_META_DB_PASSWORD=${POSTGRES_PASSWORD}
+    restart: unless-stopped
+
+  studio:
+    image: supabase/studio:2025.06.30-sha-6f5982d
+    depends_on:
+      meta:
+        condition: service_started
+    environment:
+      - STUDIO_PG_META_URL=http://meta:8080
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.2.5-alpine
+    restart: unless-stopped
+
+  n8n:
+    image: n8nio/n8n:latest
+    command: ["n8n", "start"]
+    environment:
+      - N8N_HOST=n8n.{{DOMAIN}}
+      - N8N_PROTOCOL=https
+      - WEBHOOK_URL=https://n8n.{{DOMAIN}}/
+      - EXECUTIONS_MODE=queue
+      - QUEUE_BULL_REDIS_HOST=redis
+      - QUEUE_BULL_REDIS_PORT=6379
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=db
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=postgres
+      - DB_POSTGRESDB_USER=postgres
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
+    depends_on: [db, redis]
+    restart: unless-stopped
+    volumes:
+      - n8n-data:/home/node/.n8n
+
+  n8n-worker:
+    image: n8nio/n8n:latest
+    command: ["n8n", "worker" "--concurrency=5"]
+    depends_on: [db, redis]
+    environment:
+      - N8N_HOST=n8n.{{DOMAIN}}
+      - N8N_PROTOCOL=https
+      - WEBHOOK_URL=https://n8n.{{DOMAIN}}/
+      - EXECUTIONS_MODE=queue
+      - QUEUE_BULL_REDIS_HOST=redis
+      - QUEUE_BULL_REDIS_PORT=6379
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=db
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=postgres
+      - DB_POSTGRESDB_USER=postgres
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
+    restart: unless-stopped
+    volumes:
+      - n8n-data:/home/node/.n8n
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:1.23.13-alpine
+    volumes:
+      - kuma-data:/app/data
+    restart: unless-stopped
 
 volumes:
-  pgdata:
-  n8ndata:
-  redisdata:
-  kumadata:
-  caddy_data:
-  caddy_config:
+  db-data:
+  n8n-data:
+  kuma-data:
