@@ -64,7 +64,7 @@ services:
 
   n8n-worker:
     image: n8nio/n8n:latest
-    command: ["n8n", "worker" "--concurrency=5"]
+    command: ["n8n", "worker", "--concurrency=5"]
     depends_on: [db, redis]
     environment:
       - N8N_HOST=n8n.{{DOMAIN}}
