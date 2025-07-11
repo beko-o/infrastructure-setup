@@ -20,18 +20,12 @@
 
 ## Установка
 
-```bash
 ssh root@<ip>
-```
 
-```bash
 sudo apt update
 sudo apt install -y git
-```
-
-```bash
 cd ~
-```
+
 
 1. Клонируем репозиторий:
    ```bash
