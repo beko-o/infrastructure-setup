@@ -1,8 +1,0 @@
-auth:
-  enabled: true
-  password: "${REDIS_PASSWORD}"
-
-master:
-  persistence:
-    enabled: true
-    size: 8Gi
