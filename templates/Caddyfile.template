@@ -2,10 +2,17 @@
     email khamzauly@gmail.com
 }
 
+# Редирект с корня на n8n
+{{DOMAIN}} {
+    redir https://n8n.{{DOMAIN}}{uri} permanent
+}
+
+# n8n
 n8n.{{DOMAIN}} {
     reverse_proxy n8n:5678
 }
 
+# Supabase Studio с Basic Auth
 supabase.{{DOMAIN}} {
     basic_auth {
         admin $2a$14$MESToqROn9NbApOxIdXa7OGMIrNeRCielB6CIHOkjPbabOhEKWQSy
@@ -13,6 +20,7 @@ supabase.{{DOMAIN}} {
     reverse_proxy studio:3000
 }
 
+# Uptime Kuma
 status.{{DOMAIN}} {
     reverse_proxy uptime-kuma:3001
 }
