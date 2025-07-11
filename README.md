@@ -1,38 +1,50 @@
-# Быстрая настройка Ubuntu-сервера под наши сервисы
+# Быстрое развёртывание стека  
+(n8n, Supabase Studio, Redis, Uptime Kuma, Caddy)
 
-## Предварительные требования
+**Что устанавливается**  
+- PostgreSQL (Supabase DB)  
+- Supabase Studio  
+- n8n (с Basic Auth)  
+- Redis  
+- Uptime Kuma  
+- Caddy (HTTPS + обратный прокси)
 
-- Пустой Ubuntu 22.04 (или выше)
-- Доступ по SSH
-- DNS-записи для домена, указанные в `.env`
+---
 
-## Шаг 1. Клонирование репозитория
+## Требования
 
-git clone https://github.com/ваш-аккаунт/infrastructure-setup.git
-cd infrastructure-setup
+- Ubuntu 20.04+ (или Debian-based)  
+- root / sudo-доступ  
 
-## Шаг 2. Настройка переменных
+---
 
-cp .env.example .env
-# отредактируйте .env:
-#   DOMAIN, EMAIL, N8N_HOST, SUPABASE_HOST, и т.д.
+## Установка
 
-## Шаг 3. Bootstrap кластера
+1. Клонируем репозиторий:
+   ```bash
+   git clone https://github.com/<ваш-логин>/server-setup.git
+   cd server-setup
 
-bash scripts/bootstrap.sh
+2. делаем скрипты исполняемыми
+    chmod +x install.sh configure.sh setup.sh
 
-Этот скрипт установит:
-k3s + kubectl
-Helm 3
-Helmfile
+3. Запускаем установку:
 
-## Шаг 4. Деплой сервисов
-bash scripts/deploy.sh
+    ./install.sh example.kz
+    Где example.kz — домен.
 
-Считает переменные из .env
-Добавит нужные Helm-репо
-Запустит helmfile sync
-Проверить статус: kubectl get pods -A
+---
 
+Что происходит
 
+1) configure.sh:
+Генерирует файл .env
+Генерирует docker-compose.yml и Caddyfile с нужными поддоменами и Basic Auth для Supabase.
 
+2) setup.sh:
+Устанавливает Docker и Docker Compose (если нужно).
+Запускает все сервисы командой docker compose up -d.
+
+--- 
+
+done
