@@ -48,7 +48,6 @@ services:
       DB_POSTGRESDB_PASSWORD: "${POSTGRES_PASSWORD}"
       N8N_HOST: "n8n.{{DOMAIN}}"
       N8N_PROTOCOL: "https"
-      N8N_PORT: "443"
       # вебух:
       WEBHOOK_TUNNEL_URL: "https://n8n.${DOMAIN}/"
     volumes:
