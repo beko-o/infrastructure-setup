@@ -22,17 +22,21 @@
 
 1. Клонируем репозиторий:
    ```bash
-   git clone https://github.com/<ваш-логин>/server-setup.git
-   cd server-setup
+   git clone https://github.com/beko-o/infrastructure-setup.git
+   cd infrastructure-setup
+   ```
 
 2. делаем скрипты исполняемыми
+   ```bash
     chmod +x install.sh configure.sh setup.sh
+   ```
 
-3. Запускаем установку:
-
+4. Запускаем установку:
+   ```bash
     ./install.sh example.kz
+   ```
     Где example.kz — домен.
-
+   
 ---
 
 Что происходит
