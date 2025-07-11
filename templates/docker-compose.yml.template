@@ -21,6 +21,8 @@ services:
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
+      DB_USER: postgres
+      DB_NAME: postgres
       DB_PASSWORD: "${POSTGRES_PASSWORD}"
     depends_on:
       - postgres
@@ -44,12 +46,8 @@ services:
       DB_POSTGRESDB_DATABASE: postgres
       DB_POSTGRESDB_USER: postgres
       DB_POSTGRESDB_PASSWORD: "${POSTGRES_PASSWORD}"
-      # Правильные URL/Webhook
-      N8N_HOST: "n8n.${DOMAIN}"
-      N8N_PORT: 443
-      N8N_PROTOCOL: "https"
-      # Альтернатива:
-      # WEBHOOK_TUNNEL_URL: "https://n8n.${DOMAIN}/"
+      # вебух:
+      WEBHOOK_TUNNEL_URL: "https://n8n.${DOMAIN}/"
     volumes:
       - n8ndata:/home/node/.n8n
     depends_on:
