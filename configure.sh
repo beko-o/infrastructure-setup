@@ -8,13 +8,13 @@ fi
 
 DOMAIN=$1
 
-# 1) Генерируем .env
+# .env
 sed "s/{{DOMAIN}}/$DOMAIN/g" templates/.env.template > .env
 
-# 2) Генерируем docker-compose.yml
+# docker-compose.yml
 sed "s/{{DOMAIN}}/$DOMAIN/g" templates/docker-compose.yml.template > docker-compose.yml
 
-# 3) Генерируем Caddyfile
+# Caddyfile
 sed "s/{{DOMAIN}}/$DOMAIN/g" templates/Caddyfile.template > Caddyfile
 
-echo "✅ Сгенерированы .env, docker-compose.yml и Caddyfile для домена $DOMAIN"
+echo "✅ Сгенерированы .env, docker-compose.yml и Caddyfile для $DOMAIN"

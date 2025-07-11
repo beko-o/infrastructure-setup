@@ -1,8 +1,5 @@
 {
-    # Глобальные настройки Caddy
     email khamzauly@gmail.com
-    # Для DNS-валидации:
-    # acme_dns cloudflare
 }
 
 # Редирект с корня на n8n

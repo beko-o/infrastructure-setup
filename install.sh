@@ -9,11 +9,11 @@ fi
 
 DOMAIN=$1
 
-# Делаем скрипты исполняемыми
+# даём права
 chmod +x configure.sh setup.sh
 
-# Генерируем конфиги и .env
+# генерируем конфиги + env
 ./configure.sh "$DOMAIN"
 
-# Устанавливаем Docker/Docker Compose и запускаем контейнеры
+# ставим Docker/Docker Compose и запускаем
 ./setup.sh

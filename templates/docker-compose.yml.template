@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # PostgreSQL для Supabase
+  # PostgreSQL
   postgres:
     image: postgres:15
     container_name: postgres
@@ -22,6 +22,8 @@ services:
       DB_HOST: postgres
       DB_PORT: 5432
       DB_PASSWORD: "${POSTGRES_PASSWORD}"
+    depends_on:
+      - postgres
 
   # n8n
   n8n:
@@ -31,19 +33,29 @@ services:
     ports:
       - "5678:5678"
     environment:
+      # Basic Auth
       N8N_BASIC_AUTH_ACTIVE: "true"
       N8N_BASIC_AUTH_USER: "admin"
       N8N_BASIC_AUTH_PASSWORD: "changeme"
+      # База данных
       DB_TYPE: postgres
       DB_POSTGRESDB_HOST: postgres
       DB_POSTGRESDB_PORT: 5432
       DB_POSTGRESDB_DATABASE: postgres
       DB_POSTGRESDB_USER: postgres
       DB_POSTGRESDB_PASSWORD: "${POSTGRES_PASSWORD}"
+      # Правильные URL/Webhook
+      N8N_HOST: "n8n.${DOMAIN}"
+      N8N_PORT: 443
+      N8N_PROTOCOL: "https"
+      # Альтернатива:
+      # WEBHOOK_TUNNEL_URL: "https://n8n.${DOMAIN}/"
     volumes:
       - n8ndata:/home/node/.n8n
+    depends_on:
+      - postgres
 
-  # Redis
+  # Redis (опционально)
   redis:
     image: redis:7
     container_name: redis
