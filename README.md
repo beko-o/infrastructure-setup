@@ -20,6 +20,13 @@
 
 ## Установка
 
+ssh root@<ip>
+
+sudo apt update
+sudo apt install -y git
+cd ~
+
+
 1. Клонируем репозиторий:
    ```bash
    git clone https://github.com/beko-o/infrastructure-setup.git
